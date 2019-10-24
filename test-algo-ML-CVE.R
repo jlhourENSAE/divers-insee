@@ -312,15 +312,11 @@ if(fixed_effect!="0" & cluster!="0"){
 
 # Model names. For a list of available model names in caret package see: http://topepo.github.io/caret/available-models.html
 # some available models given above
-# methods      = c("glmnet","xgbTree","pcaNNet","rf")
-methods      = c("glmnet","gbm")   
 
-#method_names = c("Elastic Net",
-#                  "Boosting",
-#                  "Neural Net",
-#                  "Random Forest"
-#)
-method_names = c("Elastic Net","Boosting")
+methods      = c("glmnet","svmLinear2","svmLinear3","xgbTree","pcaNNet","rf")
+method_names = c("Elastic Net","SVM Simple","SVM-L2","Boosting","Neural Net","Random Forest")
+
+# Tester SVM classif et regression??
 
 # A list of arguments for models used in the estimation
 args         = list(svmLinear2=list(type='eps-regression'), 
@@ -328,27 +324,18 @@ args         = list(svmLinear2=list(type='eps-regression'),
                     svmPoly=list(type='nu-svr'), 
                     gbm=list(verbose=FALSE), 
                     xgbTree=list(verbose=FALSE),
-                    glmnet = list(intercept = TRUE),
+                    glmnet = list(intercept = TRUE, family="binomial"),
                     rf=list(ntree=1000), 
                     gamboost=list(baselearner='btree'), avNNet=list(verbose = 0, linout = TRUE, trace = FALSE), 
                     pcaNNet=list(linout = TRUE, trace = FALSE, MaxNWts=100000, maxit=10000), 
                     nnet=list(linout = TRUE, trace = FALSE, MaxNWts=100000, maxit=10000))
 
 
-methodML   = rep("repeatedcv",length(methods))
-
-# resampling method for chosing tuning parameters. available options: boot, boot632, cv, LOOCV, LGOCV, repeatedcv, oob, none
+methodML   = rep("cv",length(methods))
 tune       = rep(20,length(methods))
-# avant : 20 pour tune
-
 proces     = rep("range",length(methods)) # pre-processing method
-
 select     = rep("best",length(methods)) # optimality criteria for choosing tuning parameter in cross validation. available options: best, oneSE, tolerance
-
-
-cv         = rep(2,length(methods))# the number of folds in cross-validation
-
-
+cv         = rep(5,length(methods))# the number of folds in cross-validation
 rep        = rep(2,length(methods)) # number of iteration in repeated cross-validations
 
 
@@ -360,7 +347,6 @@ tune_param[[1]]  = 0
 tune_param[[2]]  = 0
 # tune_param[[3]]  = 0
 # tune_param[[4]]  = data.frame(mtry=5)
-
 
 set.seed(1211);
 
@@ -399,7 +385,6 @@ for(i in 1:length(Y)){
   ind_u = which(data_subuse[,d]==1)         # treatment indicator
   
   for(l in 1:length(methods)){
-    
     x = X
     if(tune_param[[l]]==0){ f = NULL}
     if(tune_param[[l]]!=0){ f = tune_param[[l]]}
@@ -411,7 +396,7 @@ for(i in 1:length(Y)){
     # estimates of the baseline and treatment effects, which we call
     # proxy scores
     
-    fitControl   = trainControl(method = methodML[l], number = cv[l], repeats = rep[l], allowParallel = FALSE, verboseIter=FALSE, search="random", selectionFunction=select[l])
+    fitControl   = trainControl(method = methodML[l], number = cv[l], repeats = rep[l], allowParallel = FALSE, verboseIter=TRUE, search="random", selectionFunction=select[l])
     arg          = c(list(form=form, data = data_subuse[ind_u,],  method = methods[l], tuneGrid = f, trControl = fitControl, preProcess=proces[l], tuneLength=tune[l]), args[[methods[l]]])
     fit.yz1      = suppressWarnings(do.call(caret::train, arg))
     my_z1x       = predict(fit.yz1, newdata=data_subout, type="raw")
@@ -420,7 +405,7 @@ for(i in 1:length(Y)){
       my_z1x       = ifelse(my_z1x>1,1,my_z1x)
     }
     
-    fitControl   = trainControl(method = methodML[l], number = cv[l], repeats = rep[l], allowParallel = FALSE, verboseIter=FALSE, search="random", selectionFunction=select[l])
+    fitControl   = trainControl(method = methodML[l], number = cv[l], repeats = rep[l], allowParallel = FALSE, verboseIter=TRUE, search="random", selectionFunction=select[l])
     arg          = c(list(form=form, data = data_subuse[-ind_u,],  method = methods[l], tuneGrid = f, trControl = fitControl, preProcess=proces[l], tuneLength=tune[l]), args[[methods[l]]])
     fit.yz0      = suppressWarnings(do.call(caret::train, arg))
     my_z0x       = predict(fit.yz0, newdata=data_subout, type="raw")
@@ -449,6 +434,8 @@ for(i in 1:length(Y)){
     
     # Save correlation with s_0(X)
     Results[i,l,3] <- abs(summary(reg)$coefficients['S_ort',1])*sqrt(var(data_subout$S))
+    print(method_names[l])
+    print(Results[i,l,])
   }  
 }
 
