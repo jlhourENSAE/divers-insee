@@ -3,7 +3,7 @@
 ### 26 decembre 2018
 
 # setwd("//ulysse/users/JL.HOUR/1A_These/A. Research/RegSynthProject/regsynth")
-setwd("/Users/jeremylhour/Documents/Recherche/RegSynthProject/regsynth")
+# setwd("/Users/jeremylhour/Documents/Recherche/RegSynthProject/regsynth")
 rm(list=ls())
 
 ### 0. Settings
@@ -20,18 +20,18 @@ library("deldir")
 library("plotrix")
 
 ### Load user functions
-source("functions/wsol.R")
-source("functions/wsoll1.R")
-source("functions/PolyDGP.R")
-source("functions/wATT.R")
-source("functions/matching.R")
-source("functions/matchest.R")
-source("functions/OBest.R")
-source("functions/regsynth.R")
-source("functions/regsynthpath.R")
-source("functions/TZero.R")
-source("functions/synthObj.R")
-source("functions/which.tile.R")
+source("pensynth_functions/wsol.R")
+source("pensynth_functions/wsoll1.R")
+source("pensynth_functions/PolyDGP.R")
+#source("functions/wATT.R")
+source("pensynth_functions/matching.R")
+#source("functions/matchest.R")
+#source("functions/OBest.R")
+source("pensynth_functions/regsynth.R")
+source("pensynth_functions/regsynthpath.R")
+source("pensynth_functions/TZero.R")
+#source("functions/synthObj.R")
+source("pensynth_functions/which.tile.R")
 
 ## Drawing little arrows
 arrowLine <- function(x, y, N=10, ...){
@@ -171,7 +171,7 @@ pdf(file="plot/DTPanelA.pdf", height=6, width=6)
 plot(c(X0[1,],X1[,1]), c(X0[2,],X1[,2]), type="n", asp=1,xlim=c(0.2,.3),ylim=c(.2,.6),
      xlab="",ylab="",xaxt='n', ann=FALSE, yaxt='n')
 #points(X0[1,], X0[2,], pch=1, col="black", cex=1, lwd=2)
-points(X1[,1], X1[,2], pch=4, col="black", cex=2, lwd=5)
+points(X1[,1], X1[,2], pch=4, col="red", cex=2, lwd=5)
 plot(DTco, wlines="triang", wpoints="none", number=FALSE, add=TRUE, lty=2)
 dev.off()
 
@@ -182,10 +182,10 @@ pdf(file="plot/DTPanelB.pdf", height=6, width=6)
 plot(c(X0[1,],X1[,1]), c(X0[2,],X1[,2]), type="n", asp=1,xlim=c(0.2,.3),ylim=c(.2,.6),
      xlab="",ylab="",xaxt='n', ann=FALSE, yaxt='n')
 #points(X0[1,], X0[2,], pch=1, col="black", cex=1, lwd=2)
-points(X1[,1], X1[,2], pch=4, col="black", cex=2, lwd=5)
+points(X1[,1], X1[,2], pch=4, col="red", cex=2, lwd=5)
 plot(DTco, wlines="triang", wpoints="none", number=FALSE, add=TRUE, lty=2)
-points(SyntheticUnit,type="line",col="black", lwd=6, lty=1)
-draw.circle(X1[,1], X1[,2],radius=rad,nv=100,border="black",lty=1,lwd=2)
+points(SyntheticUnit,type="line",col="red", lwd=6, lty=1)
+draw.circle(X1[,1], X1[,2],radius=rad,nv=100,border="orange",lty=1,lwd=2)
 dev.off()
 
 ### Panel C: what units are active?
@@ -193,11 +193,11 @@ pdf(file="plot/DTPanelC.pdf", height=6, width=6)
 plot(c(X0[1,],X1[,1]), c(X0[2,],X1[,2]), type="n", asp=1,xlim=c(0.2,.3),ylim=c(.2,.6),
      xlab="",ylab="",xaxt='n', ann=FALSE, yaxt='n')
 #points(X0[1,], X0[2,], pch=1, col="black", cex=1, lwd=2)
-points(X1[,1], X1[,2], pch=4, col="black", cex=2, lwd=5)
+points(X1[,1], X1[,2], pch=4, col="red", cex=2, lwd=5)
 plot(DTco, wlines="triang", wpoints="none", number=FALSE, add=TRUE, lty=2)
-points(SyntheticUnit,type="line",col="black", lwd=6, lty=1)
-points(t(X0[,active]), pch=16, col="black", cex=2, lwd=1)
-points(t(Xnn), pch=16, col="black", cex=2, lwd=1)
+points(SyntheticUnit,type="line",col="red", lwd=6, lty=1)
+points(t(X0[,active]), pch=16, col="blue", cex=2, lwd=1)
+points(t(Xnn), pch=16, col="blue", cex=2, lwd=1)
 dev.off()
 
 # Panel D
